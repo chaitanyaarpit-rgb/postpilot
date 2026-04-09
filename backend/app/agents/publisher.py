@@ -1,6 +1,4 @@
 import requests
-import tempfile
-import os
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app import models
@@ -22,17 +20,14 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
         "X-Restli-Protocol-Version": "2.0.0",
+        "LinkedIn-Version": "202401",
     }
 
-    # Get member ID using userinfo endpoint (works with w_member_social)
-    # Get member ID using /v2/me with projection
-    userinfo_resp = requests.get(
-        "https://api.linkedin.com/v2/me?projection=(id)",
-        headers=headers,
-    )
-    print(f"[Publisher] userinfo response: {userinfo_resp.status_code} {userinfo_resp.text}")
-    userinfo_resp.raise_for_status()
-    member_id = userinfo_resp.json().get("id")
+    # Get member ID
+    me_resp = requests.get("https://api.linkedin.com/v2/me", headers=headers)
+    print(f"[Publisher] me response: {me_resp.status_code} {me_resp.text}")
+    me_resp.raise_for_status()
+    member_id = me_resp.json().get("id")
     author_urn = f"urn:li:person:{member_id}"
 
     # Build post text
@@ -60,7 +55,7 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         headers=headers,
         json=payload,
     )
-    print(f"[Publisher] LinkedIn response: {resp.status_code} {resp.text}")
+    print(f"[Publisher] ugcPosts response: {resp.status_code} {resp.text}")
     resp.raise_for_status()
 
     result = resp.json()
