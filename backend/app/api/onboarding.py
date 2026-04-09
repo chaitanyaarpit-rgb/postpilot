@@ -24,7 +24,7 @@ class APIKeysRequest(BaseModel):
     openai_key: str
     tavily_key: str
     linkedin_access_token: str
-    linkedin_org_id: str
+    linkedin_org_id: str = ""
     linkedin_client_id: str = ""
     linkedin_client_secret: str = ""
 

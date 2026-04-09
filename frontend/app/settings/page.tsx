@@ -87,8 +87,8 @@ export default function SettingsPage() {
                     className="w-full border rounded-lg px-4 py-3 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">LinkedIn Organization ID</label>
-                  <input {...register('linkedin_org_id')} placeholder="123456789"
+                  <label className="text-sm font-medium text-gray-700">LinkedIn Organization ID (optional)</label>
+                  <input {...register('linkedin_org_id')} placeholder="Leave blank for personal profile"
                     className="w-full border rounded-lg px-4 py-3 mt-1 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
                 </div>
               </>
