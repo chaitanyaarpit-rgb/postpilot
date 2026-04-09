@@ -29,6 +29,7 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         "https://api.linkedin.com/v2/userinfo",
         headers=headers,
     )
+    print(f"[Publisher] userinfo response: {userinfo_resp.status_code} {userinfo_resp.text}")
     userinfo_resp.raise_for_status()
     member_id = userinfo_resp.json().get("sub")
     author_urn = f"urn:li:person:{member_id}"
@@ -58,6 +59,7 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         headers=headers,
         json=payload,
     )
+    print(f"[Publisher] LinkedIn response: {resp.status_code} {resp.text}")
     resp.raise_for_status()
 
     result = resp.json()
