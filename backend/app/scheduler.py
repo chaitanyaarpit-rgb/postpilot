@@ -30,19 +30,24 @@ def schedule_all_users():
 
 def _schedule_user(user):
     profile = user.profile
+    # Normalize timezone — fix common invalid values
+    timezone = profile.post_timezone or "UTC"
+    if timezone == "IST":
+        timezone = "Asia/Kolkata"
+
     job_id = f"user_{user.id}_daily_post"
     scheduler.add_job(
         run_pipeline_for_user,
         CronTrigger(
             hour=profile.post_hour,
             minute=0,
-            timezone=profile.post_timezone,
+            timezone=timezone,
         ),
         args=[user.id],
         id=job_id,
         replace_existing=True,
     )
-    log.info(f"Scheduled user {user.id} at {profile.post_hour}:00 {profile.post_timezone}")
+    log.info(f"Scheduled user {user.id} at {profile.post_hour}:00 {timezone}")
 
 
 def start_scheduler():
