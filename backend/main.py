@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.database import engine, Base
-from app.api import auth, onboarding, posts, dashboard
+from app.api import auth, onboarding, posts, dashboard, admin
 from app.scheduler import start_scheduler, stop_scheduler
 import os
 
@@ -31,6 +31,7 @@ app.include_router(auth.router)
 app.include_router(onboarding.router)
 app.include_router(posts.router)
 app.include_router(dashboard.router)
+app.include_router(admin.router)
 
 if os.path.exists("output"):
     app.mount("/output", StaticFiles(directory="output"), name="output")
