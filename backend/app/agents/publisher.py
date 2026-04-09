@@ -25,13 +25,14 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
     }
 
     # Get member ID using userinfo endpoint (works with w_member_social)
+    # Get member ID using /v2/me with projection
     userinfo_resp = requests.get(
-        "https://api.linkedin.com/v2/userinfo",
+        "https://api.linkedin.com/v2/me?projection=(id)",
         headers=headers,
     )
     print(f"[Publisher] userinfo response: {userinfo_resp.status_code} {userinfo_resp.text}")
     userinfo_resp.raise_for_status()
-    member_id = userinfo_resp.json().get("sub")
+    member_id = userinfo_resp.json().get("id")
     author_urn = f"urn:li:person:{member_id}"
 
     # Build post text
