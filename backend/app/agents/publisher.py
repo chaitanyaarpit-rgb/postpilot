@@ -24,18 +24,21 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         "X-Restli-Protocol-Version": "2.0.0",
     }
 
-    # Step 1: Get personal member URN
-    me_resp = requests.get("https://api.linkedin.com/v2/me", headers=headers)
-    me_resp.raise_for_status()
-    member_id = me_resp.json()["id"]
+    # Get member ID using userinfo endpoint (works with w_member_social)
+    userinfo_resp = requests.get(
+        "https://api.linkedin.com/v2/userinfo",
+        headers=headers,
+    )
+    userinfo_resp.raise_for_status()
+    member_id = userinfo_resp.json().get("sub")
     author_urn = f"urn:li:person:{member_id}"
 
-    # Step 2: Build post text
+    # Build post text
     text = post.caption or ""
     if post.hashtags:
         text += "\n\n" + post.hashtags
 
-    # Step 3: Build payload
+    # Publish
     payload = {
         "author": author_urn,
         "lifecycleState": "PUBLISHED",
@@ -50,7 +53,6 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
         },
     }
 
-    # Step 4: Publish
     resp = requests.post(
         "https://api.linkedin.com/v2/ugcPosts",
         headers=headers,
@@ -63,4 +65,4 @@ def publish_post_record(post_id: int, user_id: int, db: Session):
     post.published_at = datetime.utcnow()
     post.linkedin_post_id = result.get("id", "")
     db.commit()
-    print(f"[Publisher] Published to LinkedIn profile: {result.get('id')}")
+    print(f"[Publisher] Published to LinkedIn: {result.get('id')}")
